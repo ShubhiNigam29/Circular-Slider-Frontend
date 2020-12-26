@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Circular Slider</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,600" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Circular Slider</h1>
+
+        <!-- slider container -->
+        <div id="slide"></div>
+    </div>
+
+    <script type="text/javascript" src="app.js"></script>
+
+    <script>
+        // slider options
+        const opts = {
+            DOMselector: '#slide',
+            sliders: [
+				{
+                    radius: 190,
+                    min: 0,
+                    max: 3000,
+                    step: 100,
+                    initialValue: 750,
+                    color: '#DE33FF',
+                    displayName: 'Transportation'
+                }
+            ]
+        };
+
+        // instantiate the slider
+        const slider = new Slider(opts);
+        slider.draw();
+    </script>
+</body>
+
+</html>
