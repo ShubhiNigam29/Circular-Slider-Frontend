@@ -22,6 +22,8 @@ class Slider {
         this.handleFillColor = '#fff';                              // Slider handle fill color
         this.handleStrokeColor = '#888888';                         // Slider handle stroke color
         this.handleStrokeThickness = 3;                             // Slider handle stroke thickness    
+        this.mouseDown = false;                                     // Is mouse down
+        this.activeSlider = null;                                   // Stores active (selected) slider
     }
 
     /**
@@ -44,6 +46,10 @@ class Slider {
 
         // Draw sliders
         this.sliders.forEach((slider, index) => this.drawSingleSliderOnInit(svg, slider, index));
+
+        // Event listeners
+        svgContainer.addEventListener('mousedown', this.mouseTouchStart.bind(this), false);
+        svgContainer.addEventListener('touchstart', this.mouseTouchStart.bind(this), false);
     }
 
     /**
@@ -178,6 +184,59 @@ class Slider {
     }
 
     /**
+     * Redraw active slider
+     * 
+     * @param {element} activeSlider
+     * @param {obj} rmc
+     */
+    redrawActiveSlider(rmc) {
+        const activePath = this.activeSlider.querySelector('.sliderSinglePathActive');
+        const radius = +this.activeSlider.getAttribute('rad');
+        const currentAngle = this.calculateMouseAngle(rmc) * 0.999;
+
+        // Redraw active path
+        activePath.setAttribute('d', this.describeArc(this.cx, this.cy, radius, 0, this.radiansToDegrees(currentAngle)));
+
+        // Redraw handle
+        const handle = this.activeSlider.querySelector('.sliderHandle');
+        const handleCenter = this.calculateHandleCenter(currentAngle, radius);
+        handle.setAttribute('cx', handleCenter.x);
+        handle.setAttribute('cy', handleCenter.y);
+
+        // Update legend
+        this.updateLegendUI(currentAngle);
+    }
+
+    /**
+     * Update legend UI
+     * 
+     * @param {number} currentAngle 
+     */
+    updateLegendUI(currentAngle) {
+        const targetSlider = this.activeSlider.getAttribute('data-slider');
+        const targetLegend = document.querySelector(`li[data-slider="${targetSlider}"] .sliderValue`);
+        const currentSlider = this.sliders[targetSlider];
+        const currentSliderRange = currentSlider.max - currentSlider.min;
+        let currentValue = currentAngle / this.tau * currentSliderRange;
+        const numOfSteps =  Math.round(currentValue / currentSlider.step);
+        currentValue = currentSlider.min + numOfSteps * currentSlider.step;
+        targetLegend.innerText = currentValue;
+    }
+
+    /**
+     * Mouse down / Touch start event
+     * 
+     * @param {object} e 
+     */
+    mouseTouchStart(e) {
+        if (this.mouseDown) return;
+        this.mouseDown = true;
+        const rmc = this.getRelativeMouseCoordinates(e);
+        this.findClosestSlider(rmc);
+        this.redrawActiveSlider(rmc);
+    }
+
+    /**
      * Calculate number of arc fractions and space between them
      * 
      * @param {number} circumference 
@@ -244,6 +303,20 @@ class Slider {
         const angleInRadians = angleInDegrees * Math.PI / 180;
         const x = centerX + (radius * Math.cos(angleInRadians));
         const y = centerY + (radius * Math.sin(angleInRadians));
+        return {x, y};
+    }
+
+    /**
+     * Helper function - calculate handle center
+     * 
+     * @param {number} angle 
+     * @param {number} radius
+     * 
+     * @returns {object} coords 
+     */
+    calculateHandleCenter (angle, radius) {
+        const x = this.cx + Math.cos(angle) * radius;
+        const y = this.cy + Math.sin(angle) * radius;
         return {x, y};
     }
 }
