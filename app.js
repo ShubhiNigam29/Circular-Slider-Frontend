@@ -91,7 +91,7 @@ class Slider {
     }
 
     /**
-     * Output arch path
+     * Output arc path
      * 
      * @param {number} cx 
      * @param {number} cy 
