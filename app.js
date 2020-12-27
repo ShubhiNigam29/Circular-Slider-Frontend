@@ -387,4 +387,26 @@ class Slider {
     radiansToDegrees(angle) {
         return angle / (Math.PI / 180);
     }
+
+    /**
+     * Find closest slider to mouse pointer
+     * Activate the slider
+     * 
+     * @param {object} rmc
+     */
+    findClosestSlider(rmc) {
+        const mouseDistanceFromCenter = Math.hypot(rmc.x - this.cx, rmc.y - this.cy);
+        const container = document.querySelector('.slider__data');
+        const sliderGroups = Array.from(container.querySelectorAll('g'));
+
+        // Get distances from client coordinates to each slider
+        const distances = sliderGroups.map(slider => {
+            const rad = parseInt(slider.getAttribute('rad'));
+            return Math.min( Math.abs(mouseDistanceFromCenter - rad) );
+        });
+
+        // Find closest slider
+        const closestSliderIndex = distances.indexOf(Math.min(...distances));
+        this.activeSlider = sliderGroups[closestSliderIndex];
+    }
 }
