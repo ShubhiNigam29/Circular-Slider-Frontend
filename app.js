@@ -50,6 +50,10 @@ class Slider {
         // Event listeners
         svgContainer.addEventListener('mousedown', this.mouseTouchStart.bind(this), false);
         svgContainer.addEventListener('touchstart', this.mouseTouchStart.bind(this), false);
+        svgContainer.addEventListener('mousemove', this.mouseTouchMove.bind(this), false);
+        svgContainer.addEventListener('touchmove', this.mouseTouchMove.bind(this), false);
+        window.addEventListener('mouseup', this.mouseTouchEnd.bind(this), false);
+        window.addEventListener('touchend', this.mouseTouchEnd.bind(this), false);
     }
 
     /**
@@ -237,6 +241,29 @@ class Slider {
     }
 
     /**
+     * Mouse move / touch move event
+     * 
+     * @param {object} e 
+     */
+    mouseTouchMove(e) {
+        if (!this.mouseDown) return;
+        e.preventDefault();
+        const rmc = this.getRelativeMouseCoordinates(e);
+        this.redrawActiveSlider(rmc);
+    }
+
+    /**
+     * Mouse move / touch move event
+     * Deactivate slider
+     * 
+     */
+    mouseTouchEnd() {
+        if (!this.mouseDown) return;
+        this.mouseDown = false;
+        this.activeSlider = null;
+    }
+
+    /**
      * Calculate number of arc fractions and space between them
      * 
      * @param {number} circumference 
@@ -318,5 +345,46 @@ class Slider {
         const x = this.cx + Math.cos(angle) * radius;
         const y = this.cy + Math.sin(angle) * radius;
         return {x, y};
+    }
+
+    /**
+     * Get mouse coordinates relative to the top and left of the container
+     *  
+     * @param {object} e
+     * 
+     * @returns {object} coords
+     */ 
+    getRelativeMouseCoordinates (e) {   
+        const containerRect = document.querySelector('.slider__data').getBoundingClientRect();
+        const x = e.clientX - containerRect.left;
+        const y = e.clientY - containerRect.top;
+        return { x, y };
+    }
+
+    /**
+     * Calculate mouse angle in radians
+     * 
+     * @param {object} rmc 
+     * 
+     * @returns {number} angle
+     */
+    calculateMouseAngle(rmc) {
+        const angle = Math.atan2(rmc.y - this.cy, rmc.x - this.cx);
+        if (angle > - this.tau / 2 && angle < - this.tau / 4) {
+            return angle + this.tau * 1.25;
+        } else {
+            return angle + this.tau * 0.25;
+        }
+    }
+
+    /**
+     * Helper function - transform radians to degrees
+     * 
+     * @param {number} angle 
+     * 
+     * @returns {number} angle
+     */
+    radiansToDegrees(angle) {
+        return angle / (Math.PI / 180);
     }
 }
