@@ -31,7 +31,7 @@ Created a slider using vanilla JS. It's reusable, and customizable.
 
 ## Live Demo
 
-[a link](https://raw.githack.com/ShubhiNigam29/Circular-Slider-Frontend/main/index.html)
+[Live Demo](https://raw.githack.com/ShubhiNigam29/Circular-Slider-Frontend/main/index.html)
 
 ## Steps
 
@@ -52,7 +52,6 @@ const Options = {
       }
     ]
 };
-
 ```
 
 2. Option description <br />
@@ -72,7 +71,12 @@ const Options = {
 ```
 const slider = new Slider(Options);
 slider.draw();
-
 ```
 
 The slider is now ready to use!
+
+## Browser Support
+
+Slider is responsive/mobile friendly and works on all modern browsers such as Chrome, Firefox, and Safari.
+
+![alt text](https://github.com/ShubhiNigam29/Circular-Slider-Frontend/blob/main/MobileTest.JPG)
