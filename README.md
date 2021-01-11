@@ -27,4 +27,52 @@ touched slider range) <br />
 
 # Solution
 
-Created a slider using vanilla JS. It's reusable, and customizable. 
+Created a slider using vanilla JS. It's reusable, and customizable.
+
+## Live Demo
+
+[a link](https://raw.githack.com/ShubhiNigam29/Circular-Slider-Frontend/main/index.html)
+
+## Steps
+
+1. "Option" object is defined <br />
+
+```
+const Options = {
+    DOMselector: string,
+    sliders: [
+      {
+        radius: number,
+        min: number,
+        max: number,
+        step: number,
+        initialValue: number,
+        color: string,
+        displayName: string
+      }
+    ]
+};
+
+```
+
+2. Option description <br />
+
+- selector -> container selector <br />
+- sliders -> array of options objects for sliders <br />
+- radius -> radius of the slider <br />
+- min -> minimum value of the slider <br />
+- max -> maximum value of the slider <br />
+- step -> value step <br />
+- initialValue -> value of the slider on initialization <br />
+- color -> color of the slider (valid hex code value) <br />
+- displayName -> name of the item <br />
+
+3. Create instance of Slider class and call draw() method: <br />
+
+```
+const slider = new Slider(Options);
+slider.draw();
+
+```
+
+The slider is now ready to use!
