@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <!-- Styling -->
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -11,19 +12,20 @@
 </head>
 
 <body>
+    <!-- Defining slider container -->
     <div class="container">
         <h1>Circular Slider</h1>
-
-        <!-- slider container -->
         <div id="slide"></div>
+        <span id="text">ADJUST DIAL TO ENTER EXPENSES</span>
     </div>
 
     <script type="text/javascript" src="app.js"></script>
-
+    
     <script>
-        // slider options
-        const opts = {
+        // Options for sliders - container, color, max/min value, step, radius
+        const options = {
             DOMselector: '#slide',
+            // Each slider having its own max/min limit and step value
             sliders: [
 				{
                     radius: 190,
@@ -73,8 +75,8 @@
             ]
         };
 
-        // instantiate the slider
-        const slider = new Slider(opts);
+        // Options object is passed while instantiating the slider
+        const slider = new Slider(options);
         slider.draw();
     </script>
 </body>

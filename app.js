@@ -14,8 +14,8 @@ class Slider {
         this.cx = this.sliderWidth / 2;                             // Slider center X coordinate
         this.cy = this.sliderHeight / 2;                            // Slider center Y coordinate
         this.tau = 2 * Math.PI;                                     // Tau constant
-        this.sliders = sliders;                                     // Sliders array with opts for each slider
-        this.arcFractionSpacing = 0.85;                             // Spacing between arc fractions
+        this.sliders = sliders;                                     // Sliders array with options
+        this.arcFractionSpacing = 0.9;                              // Spacing between arc fractions
         this.arcFractionLength = 10;                                // Arc fraction length
         this.arcFractionThickness = 25;                             // Arc fraction thickness
         this.arcBgFractionColor = '#D8D8D8';                        // Arc fraction color for background slider
@@ -27,13 +27,13 @@ class Slider {
     }
 
     /**
-     * Draw sliders on init
+     * Slider with default values on init
      * 
      */
     draw() {
 
         // Create legend UI
-        this.createLegendUI();
+        this.baseInterface();
 
         // Create and append SVG holder
         const svgContainer = document.createElement('div');
@@ -65,7 +65,7 @@ class Slider {
      */
     drawSingleSliderOnInit(svg, slider, index) {
 
-        // Default slider opts, if none are set
+        // Slider options with default values
         slider.radius = slider.radius ?? 50;
         slider.min = slider.min ?? 0;
         slider.max = slider.max ?? 1000;
@@ -73,16 +73,16 @@ class Slider {
         slider.initialValue = slider.initialValue ?? 0;
         slider.color = slider.color ?? '#FF5733';
 
-        // Calculate slider circumference
+        // Slider circumference
         const circumference = slider.radius * this.tau;
 
-        // Calculate initial angle
+        // Initial angle
         const initialAngle = Math.floor( (slider.initialValue / (slider.max - slider.min)) * 360 );
 
-        // Calculate spacing between arc fractions
+        // Spacing between arc fractions
         const arcFractionSpacing = this.calculateSpacingBetweenArcFractions(circumference, this.arcFractionLength, this.arcFractionSpacing);
 
-        // Create a single slider group - holds all paths and handle
+        // Single Slider Group
         const sliderGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         sliderGroup.setAttribute('class', 'sliderSingle');
         sliderGroup.setAttribute('data-slider', index);
@@ -90,18 +90,18 @@ class Slider {
         sliderGroup.setAttribute('rad', slider.radius);
         svg.appendChild(sliderGroup);
         
-        // Draw background arc path
-        this.drawArcPath(this.arcBgFractionColor, slider.radius, 360, arcFractionSpacing, 'bg', sliderGroup);
+        // Background arc trajectory
+        this.drawArcTrajectory(this.arcBgFractionColor, slider.radius, 360, arcFractionSpacing, 'bg', sliderGroup);
 
-        // Draw active arc path
-        this.drawArcPath(slider.color, slider.radius, initialAngle, arcFractionSpacing, 'active', sliderGroup);
+        // Active arc trajectory
+        this.drawArcTrajectory(slider.color, slider.radius, initialAngle, arcFractionSpacing, 'active', sliderGroup);
 
-        // Draw handle
+        // Handle
         this.drawHandle(slider, initialAngle, sliderGroup);
     }
 
     /**
-     * Output arc path
+     * Display arc trajectory
      * 
      * @param {number} cx 
      * @param {number} cy 
@@ -110,12 +110,12 @@ class Slider {
      * @param {number} singleSpacing 
      * @param {string} type 
      */
-    drawArcPath( color, radius, angle, singleSpacing, type, group ) {
+    drawArcTrajectory( color, radius, angle, singleSpacing, type, group ) {
 
-        // Slider path class
+        // Slider path
         const pathClass = (type === 'active') ? 'sliderSinglePathActive' : 'sliderSinglePath';
 
-        // Create svg path
+        // SVG path
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.classList.add(pathClass);
         path.setAttribute('d', this.describeArc(this.cx, this.cy, radius, 0, angle));
@@ -127,7 +127,7 @@ class Slider {
     }
 
     /**
-     * Draw handle for single slider
+     * Handle for single slider
      * 
      * @param {object} slider 
      * @param {number} initialAngle 
@@ -151,21 +151,16 @@ class Slider {
     }
 
     /**
-     * Create legend UI on init
+     * Base Interface on initialization
      * 
      */
-    createLegendUI() {
+    baseInterface() {
 
-        // Create legend
+        // Create base
         const display = document.createElement('ul');
-        display.classList.add('slider__legend');
+        display.classList.add('slider__base');
 
-        // Legend heading
-        const heading = document.createElement('h4');
-        heading.innerText = 'ADJUST DIAL TO ENTER EXPENSES';
-        display.appendChild(heading);
-
-        // Legend data for all sliders
+        // Base data for all sliders
         this.sliders.forEach((slider, index) => {
             const li = document.createElement('li');
             li.setAttribute('data-slider', index);
@@ -175,7 +170,7 @@ class Slider {
             const secondSpan = document.createElement('span');
             secondSpan.innerText = slider.displayName ?? 'Unnamed value';
             const thirdSpan = document.createElement('span');
-            thirdSpan.innerText = slider.initialValue ?? 0;
+            thirdSpan.innerText = '$' + slider.initialValue ?? 0;
             thirdSpan.classList.add('sliderValue');
             li.appendChild(firstSpan);
             li.appendChild(secondSpan);
@@ -183,48 +178,49 @@ class Slider {
             display.appendChild(li);
         });
 
-        // Append to DOM
+        // Append default sliders to DOM
         this.container.appendChild(display);
     }
 
     /**
-     * Redraw active slider
+     * Transform active slider
      * 
      * @param {element} activeSlider
      * @param {obj} rmc
      */
-    redrawActiveSlider(rmc) {
+    transformActiveSlider(rmc) {
         const activePath = this.activeSlider.querySelector('.sliderSinglePathActive');
         const radius = +this.activeSlider.getAttribute('rad');
         const currentAngle = this.calculateMouseAngle(rmc) * 0.999;
 
-        // Redraw active path
+        // Transform active path
         activePath.setAttribute('d', this.describeArc(this.cx, this.cy, radius, 0, this.radiansToDegrees(currentAngle)));
 
-        // Redraw handle
+        // Transform handle
         const handle = this.activeSlider.querySelector('.sliderHandle');
         const handleCenter = this.calculateHandleCenter(currentAngle, radius);
         handle.setAttribute('cx', handleCenter.x);
         handle.setAttribute('cy', handleCenter.y);
 
-        // Update legend
-        this.updateLegendUI(currentAngle);
+        // Update base
+        this.updateBaseInterface(currentAngle);
     }
 
     /**
-     * Update legend UI
+     * Update Base Interface
      * 
      * @param {number} currentAngle 
      */
-    updateLegendUI(currentAngle) {
+    updateBaseInterface(currentAngle) {
         const targetSlider = this.activeSlider.getAttribute('data-slider');
         const targetLegend = document.querySelector(`li[data-slider="${targetSlider}"] .sliderValue`);
         const currentSlider = this.sliders[targetSlider];
         const currentSliderRange = currentSlider.max - currentSlider.min;
         let currentValue = currentAngle / this.tau * currentSliderRange;
         const numOfSteps =  Math.round(currentValue / currentSlider.step);
+        // Value number changes in real-time based on the slider's position
         currentValue = currentSlider.min + numOfSteps * currentSlider.step;
-        targetLegend.innerText = currentValue;
+        targetLegend.innerText = '$' + currentValue;
     }
 
     /**
@@ -237,7 +233,7 @@ class Slider {
         this.mouseDown = true;
         const rmc = this.getRelativeMouseCoordinates(e);
         this.findClosestSlider(rmc);
-        this.redrawActiveSlider(rmc);
+        this.transformActiveSlider(rmc);
     }
 
     /**
@@ -249,7 +245,7 @@ class Slider {
         if (!this.mouseDown) return;
         e.preventDefault();
         const rmc = this.getRelativeMouseCoordinates(e);
-        this.redrawActiveSlider(rmc);
+        this.transformActiveSlider(rmc);
     }
 
     /**
@@ -264,7 +260,7 @@ class Slider {
     }
 
     /**
-     * Calculate number of arc fractions and space between them
+     * Number of arc fractions and space between them
      * 
      * @param {number} circumference 
      * @param {number} arcBgFractionLength 
@@ -279,7 +275,7 @@ class Slider {
     }
 
     /**
-     * Helper functiom - describe arc
+     * Arc description
      * 
      * @param {number} x 
      * @param {number} y 
@@ -317,7 +313,7 @@ class Slider {
     }
 
     /**
-     * Helper function - polar to cartesian transformation
+     * Polar to cartesian transformation
      * 
      * @param {number} centerX 
      * @param {number} centerY 
@@ -334,7 +330,7 @@ class Slider {
     }
 
     /**
-     * Helper function - calculate handle center
+     * Handle center
      * 
      * @param {number} angle 
      * @param {number} radius
@@ -362,7 +358,7 @@ class Slider {
     }
 
     /**
-     * Calculate mouse angle in radians
+     * Mouse angle in radians
      * 
      * @param {object} rmc 
      * 
@@ -378,7 +374,7 @@ class Slider {
     }
 
     /**
-     * Helper function - transform radians to degrees
+     * Transform radians to degrees
      * 
      * @param {number} angle 
      * 
